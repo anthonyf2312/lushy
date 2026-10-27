@@ -1,0 +1,17 @@
+# The dev tools have no dependencies, but in case any are added.
+node_modules/
+*.log
+
+# Local settings and secrets.
+.env
+.env.*
+
+# Editor and system files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local design-checker settings.
+.impeccable/
