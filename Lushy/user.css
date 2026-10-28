@@ -693,7 +693,7 @@ html:not(.lushy-sidebar-collapsed) #global-nav-bar > div:has(input[type="search"
   }
 }
 
-#main-view div[style*="--scroll"]:has(> [data-testid="background-image"]) {
+#main-view .before-scroll-node > div:has(> [data-testid="background-image"]) {
   border-radius: var(--lushy-radius-lg);
   mask-image: linear-gradient(#000 55%, transparent);
   animation: lushy-banner-away linear both;
@@ -701,7 +701,7 @@ html:not(.lushy-sidebar-collapsed) #global-nav-bar > div:has(input[type="search"
   animation-range: 0 300px;
 }
 
-#main-view div[style*="--scroll"] > div:not([data-testid])::after {
+#main-view .before-scroll-node > div:has(> [data-testid="background-image"]) > div:not([data-testid])::after {
   display: none !important;
 }
 
