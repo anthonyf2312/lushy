@@ -4,11 +4,13 @@
 
 ## What it is
 
-A theme that gives the Spotify app on Windows a new look. The album, playlist or artist you open
-fills the background, blurred, behind frosted-glass panels. The colours follow the song that's
-playing, and full screen is cinematic.
+Lushy is a theme for [Spicetify](https://spicetify.app) that gives the Spotify app on Windows a new
+look. The album, playlist or artist you open fills the background, blurred, behind frosted-glass
+panels. The colours follow the song that's playing, and full screen is cinematic.
 
 It's still Spotify underneath, so everything works as before.
+
+Tested on Spotify 1.3.7.2752 with Spicetify 2.46.4.
 
 ## What it looks like
 
