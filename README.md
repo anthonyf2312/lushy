@@ -69,8 +69,8 @@ If you already have the [Marketplace](https://github.com/spicetify/marketplace/w
 open it (the cart button at the top of Spotify), go to **Themes**, find **Lushy**, click
 **Install**, then **Reload now**. Installed this way, Lushy keeps itself up to date.
 
-The Marketplace only applies themes while Spicetify's theme is set to `marketplace`, which it usually
-is. If it says otherwise, run `spicetify config current_theme marketplace`, then `spicetify apply`.
+If you installed Lushy with the command or the download before, [remove that copy](#how-to-remove)
+first: the Marketplace can only install themes while no theme is installed outside it.
 
 ### Download
 
@@ -120,6 +120,8 @@ Installed from the Marketplace, Lushy updates by itself.
 iex "& { $(iwr -useb https://raw.githubusercontent.com/anthonyf2312/lushy/main/install.ps1) } -Uninstall"
 ```
 
+If you have the Marketplace, it can install themes again afterwards.
+
 **Put Spotify completely back to normal**, removing all of Spicetify's changes, including the
 Marketplace: double-click **Restore normal Spotify.cmd**, or run `spicetify restore`.
 
@@ -128,6 +130,10 @@ Marketplace: double-click **Restore normal Spotify.cmd**, or run `spicetify rest
 - **The theme disappeared.** Spotify updated itself. Run the install again.
 - **Spicetify says this Spotify version isn't supported.** Spotify updated past what your Spicetify
   knows. Run `spicetify upgrade`, then the install again.
+- **The Marketplace says to set current_theme to 'marketplace'.** Lushy installed with the command
+  or the download is in its way: the Marketplace can only install themes while it looks after the
+  theme itself. [Remove Lushy](#how-to-remove) with the command there, and the Marketplace can install
+  themes again, including Lushy.
 - **Something looks wrong.** [Open an issue](https://github.com/anthonyf2312/lushy/issues/new/choose)
   with a screenshot, and your Spotify and Spicetify versions.
 

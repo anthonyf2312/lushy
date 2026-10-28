@@ -31,7 +31,10 @@ if ($Uninstall) {
   $configFile = (& $spicetify -c | Select-Object -Last 1).Trim()
   $config = Get-Content $configFile
   if ($config -match "^\s*current_theme\s*=\s*Lushy\s*$") {
-    & $spicetify config current_theme " " color_scheme " "
+    # With the Marketplace installed, hand themes back to it (it only installs themes while the
+    # theme is "marketplace"); without it, go back to Spotify's own look.
+    $theme = if ($config -match "^\s*custom_apps\s*=.*\bmarketplace\b") { "marketplace" } else { " " }
+    & $spicetify config current_theme $theme color_scheme " "
   }
   if ($config -match "^\s*extensions\s*=.*lushy-lyrics\.js") {
     & $spicetify config extensions lushy-lyrics.js-
@@ -105,3 +108,11 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host ""
 Write-Host "Done. Spotify restarts with the Lushy theme."
+
+# Installed this way, Lushy holds Spicetify's theme setting, so the Marketplace can't install themes.
+if ((Get-Content $configFile) -match "^\s*custom_apps\s*=.*\bmarketplace\b") {
+  Write-Host ""
+  Write-Host "You have the Spicetify Marketplace. While Lushy is installed this way, the Marketplace can't"
+  Write-Host "install other themes. To try one, remove Lushy first (see 'How to remove' on GitHub), or"
+  Write-Host "install Lushy from the Marketplace instead."
+}

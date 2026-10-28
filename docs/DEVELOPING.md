@@ -37,7 +37,7 @@ version 1.2.14 or later. Spicetify 2.46.4 supports Spotify up to 1.3.7 on Window
   and its public `_spicy_lyrics.fullscreen` hooks, so it keeps working as Spicy Lyrics updates
   itself, as long as those stay.
 - `install.ps1`: what the two `.cmd` files and the README's one-line commands run. With no switch it
-  installs (run from GitHub, it downloads the latest `main` first), `-Uninstall` removes only Lushy,
+  installs (run from GitHub, it downloads the latest `main` first), `-Uninstall` removes only Lushy (handing the theme setting back to the Marketplace when it's installed, so its Themes tab works again),
   and `-Restore` runs `spicetify restore`. Run from GitHub it runs in the user's own PowerShell
   window, so it returns or throws, never `exit`s.
 - `manifest.json`: Lushy's Spicetify Marketplace listing (found through the repo's
