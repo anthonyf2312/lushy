@@ -63,6 +63,15 @@ iwr -useb https://raw.githubusercontent.com/anthonyf2312/lushy/main/install.ps1 
 If you don't have Spicetify, it offers to install it. Say yes. Spicetify then asks whether you want
 its Marketplace too: say yes if you'd like lyrics in full screen. Spotify restarts with the theme.
 
+### From the Spicetify Marketplace
+
+If you already have the [Marketplace](https://github.com/spicetify/marketplace/wiki/Installation):
+open it (the cart button at the top of Spotify), go to **Themes**, find **Lushy**, click
+**Install**, then **Reload now**. Installed this way, Lushy keeps itself up to date.
+
+The Marketplace only applies themes while Spicetify's theme is set to `marketplace`, which it usually
+is. If it says otherwise, run `spicetify config current_theme marketplace`, then `spicetify apply`.
+
 ### Download
 
 1. Download this repository as a ZIP: the green **Code** button, then **Download ZIP**. Unzip it.
@@ -99,7 +108,11 @@ When Spotify updates itself, the theme goes away. Run the install again to bring
 [one command](#one-command-recommended) also gets the latest Lushy, and **Install Lushy theme.cmd**
 reapplies the copy you downloaded.
 
+Installed from the Marketplace, Lushy updates by itself.
+
 ## How to remove
+
+**Installed from the Marketplace:** click **Remove** on Lushy's card in the Marketplace.
 
 **Remove Lushy and keep Spicetify** and your other extensions. In PowerShell:
 

@@ -40,6 +40,10 @@ version 1.2.14 or later. Spicetify 2.46.4 supports Spotify up to 1.3.7 on Window
   installs (run from GitHub, it downloads the latest `main` first), `-Uninstall` removes only Lushy,
   and `-Restore` runs `spicetify restore`. Run from GitHub it runs in the user's own PowerShell
   window, so it returns or throws, never `exit`s.
+- `manifest.json`: Lushy's Spicetify Marketplace listing (found through the repo's
+  `spicetify-themes` topic). The Marketplace loads `user.css` and `color.ini` from `main`, and
+  `theme.js` and `lushy-lyrics.js` as included scripts, through jsDelivr (which caches `main` for
+  up to 12 hours). It only applies themes while Spicetify's `current_theme` is `marketplace`.
 - `.github/ISSUE_TEMPLATE/`: the bug report and idea forms, which ask for the Spotify and Spicetify
   versions.
 - `dev/`: tools for working on the theme inside the real app. They need Node.js 22 or later and
