@@ -1,0 +1,13 @@
+{
+  "name": "Lushy",
+  "description": "Liquid Glass panels over the blurred artwork you're on, in the colours of the song that's playing, with a cinematic full screen that works with Spicy Lyrics.",
+  "preview": "docs/screenshots/album.webp",
+  "readme": "README.md",
+  "usercss": "Lushy/user.css",
+  "schemes": "Lushy/color.ini",
+  "include": [
+    "https://raw.githubusercontent.com/anthonyf2312/lushy/main/Lushy/theme.js",
+    "https://raw.githubusercontent.com/anthonyf2312/lushy/main/Extensions/lushy-lyrics.js"
+  ],
+  "tags": ["liquid glass", "blur", "dynamic colours"]
+}
