@@ -36,7 +36,12 @@ version 1.2.14 or later. Spicetify 2.46.4 supports Spotify up to 1.3.7 on Window
   browser's full screen), and closes it again on Esc. It uses only what Spicy Lyrics shows on screen
   and its public `_spicy_lyrics.fullscreen` hooks, so it keeps working as Spicy Lyrics updates
   itself, as long as those stay.
-- `install.ps1`: what the two `.cmd` files run.
+- `install.ps1`: what the two `.cmd` files and the README's one-line commands run. With no switch it
+  installs (run from GitHub, it downloads the latest `main` first), `-Uninstall` removes only Lushy,
+  and `-Restore` runs `spicetify restore`. Run from GitHub it runs in the user's own PowerShell
+  window, so it returns or throws, never `exit`s.
+- `.github/ISSUE_TEMPLATE/`: the bug report and idea forms, which ask for the Spotify and Spicetify
+  versions.
 - `dev/`: tools for working on the theme inside the real app. They need Node.js 22 or later and
   nothing else.
   - **Open Spotify for theme debugging.cmd** restarts Spotify with a debugging port that only this PC

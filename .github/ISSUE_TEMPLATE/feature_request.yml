@@ -1,0 +1,11 @@
+name: Idea
+description: Something you'd like Lushy to do or look like.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Which part of Spotify, and how it would look or work. A sketch or screenshot helps.
+    validations:
+      required: true
