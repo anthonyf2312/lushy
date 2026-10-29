@@ -21,7 +21,7 @@ const BEFORE_PAGE = `(() => {
 })();`;
 
 const cssUpdate = () => `(() => {
-  document.querySelectorAll('link[href$="user.css"]').forEach((link) => (link.disabled = true));
+  document.querySelectorAll('link[href$="user.css"], style.marketplaceUserCSS').forEach((link) => (link.disabled = true));
   let style = document.getElementById("lushy-dev-css");
   if (!style) { style = document.createElement("style"); style.id = "lushy-dev-css"; document.head.append(style); }
   style.textContent = ${JSON.stringify(read("user.css"))};

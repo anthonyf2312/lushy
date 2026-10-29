@@ -25,8 +25,8 @@
 
 ## Features
 
-- **Liquid Glass.** The sidebar and player bar are frosted glass, with the open album's, playlist's
-  or artist's artwork blurred behind everything.
+- **Liquid Glass.** The sidebar, the player bar and Home's shortcuts are frosted glass, with the open
+  album's, playlist's or artist's artwork blurred behind everything. Your library slides open and shut.
 - **Colours from the cover.** Every colour comes from the playing song's cover and fades into the
   next song's. Choose a bright or a dark background.
 - **Cinematic full screen.** Click the cover art in the player bar. With

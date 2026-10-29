@@ -282,9 +282,21 @@ body {
 /* Spotify sets --left-sidebar-width (a plain number) to 72 when collapsed; then it's 56px, so its
    middle lines up with the ⋯, and otherwise the width Spotify chose. */
 #Desktop_LeftSidebar_Id {
-  width: calc((var(--left-sidebar-width, 280) - 16 * clamp(0, 73 - var(--left-sidebar-width, 280), 1)) * 1px) !important;
+  --lushy-sidebar-width: calc((var(--left-sidebar-width, 280) - 16 * clamp(0, 73 - var(--left-sidebar-width, 280), 1)) * 1px);
+  /* Not !important, so theme.js's slide can animate it. */
+  width: var(--lushy-sidebar-width);
   border-radius: var(--lushy-radius-lg) !important;
   overflow: hidden;
+  /* "Expand Your Library" would move it over the page; it shows its grid in place instead. */
+  grid-area: left-sidebar !important;
+}
+
+/* Opening and closing the library (its button, Lushy's links, a shortcut) slides the
+   panel to its new width (theme.js); Spotify just snaps it. The content is laid out at the width
+   it's heading for, so the panel's edge reveals or covers it instead of squeezing it. */
+#Desktop_LeftSidebar_Id > :is(.lushy-nav, nav) {
+  flex: none;
+  width: calc(var(--lushy-sidebar-width) - 2px);
 }
 
 /* The floating panels are Liquid Glass. The sheen sits under their content. */
@@ -471,6 +483,20 @@ body {
   border-radius: var(--lushy-cover-sm) !important;
 }
 
+/* Rows light up like Lushy's links above them: soft glass on hover, a little stronger for the page
+   that's open, instead of Spotify's dark fill that grows out from the middle. */
+#Desktop_LeftSidebar_Id [data-encore-id="listRow"]::after {
+  inset: 0 !important;
+}
+
+#Desktop_LeftSidebar_Id [data-encore-id="listRow"]:is(:hover, :active)::after {
+  background-color: var(--lushy-glass) !important;
+}
+
+#Desktop_LeftSidebar_Id [role="row"][aria-selected="true"] [data-encore-id="listRow"]::after {
+  background-color: var(--lushy-glass-strong) !important;
+}
+
 #Desktop_LeftSidebar_Id [data-encore-id="chip"] {
   border-radius: 999px !important;
 }
@@ -549,6 +575,24 @@ body {
   animation: none !important;
 }
 
+/* Spicetify puts custom app buttons (the Marketplace's) in a scroller that clips them to their own
+   box, which cut the glass's drop shadow off into a square, and fades its ends with a mask, which
+   stopped the glass blurring what's behind it. The scroller gets room for the shadow, and the mask
+   only while there are more buttons to scroll to. */
+.custom-navlinks-scrollable_container .spicetify-sc-contentArea {
+  overflow: visible !important;
+}
+
+.custom-navlinks-scrollable_container .spicetify-sc-scroller {
+  width: auto !important;
+  padding: 12px 20px 28px;
+  margin: -12px -20px -28px;
+}
+
+.custom-navlinks-scrollable_container .spicetify-sc-scroller:not(.spicetify-sc-maskStart, .spicetify-sc-maskEnd) {
+  mask-image: none !important;
+}
+
 /* The gap Spotify leaves for its ⋯ menu, which now sits over the sidebar. */
 .main-globalNav-historyButtonsWrapper > div:empty {
   display: none !important;
@@ -618,9 +662,21 @@ body {
 }
 
 /* Hidden rather than removed, so it keeps its width: Spotify measures it to decide whether to
-   collapse the search, and would collapse it on seeing it empty. */
+   collapse the search, and would collapse it on seeing it empty. It fades with the sidebar's
+   slide. */
+#global-nav-bar > div:has(input[type="search"]) {
+  transition: opacity 0.4s cubic-bezier(0.65, 0, 0.35, 1), visibility 0.4s;
+}
+
 html:not(.lushy-sidebar-collapsed) #global-nav-bar > div:has(input[type="search"]) {
   visibility: hidden !important;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #global-nav-bar > div:has(input[type="search"]) {
+    transition: none;
+  }
 }
 
 #global-nav-bar input[type="search"] {
@@ -657,6 +713,33 @@ html:not(.lushy-sidebar-collapsed) #global-nav-bar > div:has(input[type="search"
 /* The promoted "Listen Now" card Spotify puts at the top of Home. */
 [data-testid="home-ads-container"] {
   display: none !important;
+}
+
+/* Home's shortcuts (the grid of recent playlists at the top) and the filter chips above them are
+   Liquid Glass, like the top bar's buttons. The chosen chip stays solid white. Spotify's chip row
+   clips and fades its ends with a mask, which would cut off a drop shadow and stop a blur, so the
+   chips get the glass's fill and lit edge only. */
+.view-homeShortcutsGrid-shortcut,
+#main-view [data-encore-id="chip"] > span:not([class*="--selected"]) {
+  background: var(--lushy-liquid-sheen), var(--lushy-liquid-fill), color-mix(in srgb, var(--lushy-tint) 10%, rgb(255 255 255 / 0.03)) !important;
+}
+
+.view-homeShortcutsGrid-shortcut:is(:hover, :focus-within, [data-context-menu-open="true"]),
+#main-view [data-encore-id="chip"]:hover > span:not([class*="--selected"]) {
+  background: var(--lushy-liquid-sheen), var(--lushy-liquid-fill), color-mix(in srgb, var(--lushy-tint) 14%, rgb(255 255 255 / 0.1)) !important;
+}
+
+.view-homeShortcutsGrid-shortcut {
+  border-radius: var(--lushy-radius-md) !important;
+  backdrop-filter: var(--lushy-liquid-filter);
+  box-shadow: var(--lushy-liquid-shadow-small) !important;
+}
+
+#main-view [data-encore-id="chip"] > span:not([class*="--selected"]) {
+  box-shadow:
+    inset 0 0 0 1px var(--lushy-liquid-edge),
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    inset 0 -1px 0 rgb(255 255 255 / 0.05) !important;
 }
 
 /* Spotify's colour washes behind headers: Lushy uses the backdrop instead. */
@@ -911,6 +994,11 @@ html #spicetify-home-config .lushy-home-reset.is-armed {
 
 [data-encore-id="card"]:hover {
   background: var(--lushy-glass) !important;
+}
+
+/* Spotify's own hover fill, which sits over that glass as a dark box. */
+[data-encore-id="card"]::after {
+  background-color: transparent !important;
 }
 
 [data-encore-id="card"] img {

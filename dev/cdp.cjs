@@ -58,7 +58,7 @@ async function evaluate(send, expression) {
     } else if (command === "css") {
       const css = fs.readFileSync(arg, "utf8");
       const code = `(() => {
-        document.querySelectorAll('link[href*="user.css"]').forEach((l) => (l.disabled = true));
+        document.querySelectorAll('link[href*="user.css"], style.marketplaceUserCSS').forEach((l) => (l.disabled = true));
         let s = document.getElementById("lushy-live");
         if (!s) { s = document.createElement("style"); s.id = "lushy-live"; document.head.append(s); }
         s.textContent = ${JSON.stringify(css)};

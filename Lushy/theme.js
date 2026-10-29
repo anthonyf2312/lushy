@@ -305,9 +305,17 @@
     press();
   }
 
+  // Spotify sets the width the sidebar is heading for on it (--left-sidebar-width, 72 when
+  // collapsed), and the panel slides there; going by that rather than its current width switches
+  // the links in the same frame Spotify swaps its own content, so they fade in together.
+  function collapsed(sidebar) {
+    const width = parseFloat(sidebar.style.getPropertyValue("--left-sidebar-width"));
+    return Number.isNaN(width) ? sidebar.offsetWidth < 160 : width < 160;
+  }
+
   function syncNav() {
     const sidebar = document.querySelector("#Desktop_LeftSidebar_Id");
-    if (sidebar) root.classList.toggle("lushy-sidebar-collapsed", sidebar.offsetWidth < 160);
+    if (sidebar) root.classList.toggle("lushy-sidebar-collapsed", collapsed(sidebar));
     const path = History.location?.pathname ?? "";
     for (const link of LINKS) {
       if (!link.button) continue;
@@ -368,9 +376,83 @@
     }
   }, true);
 
+  // Opening and closing the library: Spotify snaps the sidebar to its new width; here it slides
+  // there, its content fading in. Narrowing or widening the page beside it every frame makes Spotify
+  // re-lay out and restyle the whole page each frame (about 10 frames a second on Home), so while it
+  // slides the sidebar's column already has the new width, the page is laid out once, and it's moved
+  // along with the sidebar's edge instead: the main view slides (clipped so it can't run under a
+  // panel on the right), and the top bar and player bar stretch from their left ends so their right
+  // ends stay put. Dragging the edge isn't slid.
+  const SLIDE = { duration: 400, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "both" };
+  const sidebarWidth = (value) => value - 16 * Math.min(Math.max(73 - value, 0), 1);
+  let slides = [];
+  let slideColumns;
+  let settling = 0;
+
+  function endSlide() {
+    cancelAnimationFrame(settling);
+    slideColumns?.style.removeProperty("grid-template-columns");
+    slideColumns = undefined;
+    slides.splice(0).forEach((animation) => animation.cancel());
+  }
+  cleanups.push(endSlide);
+
+  // Spotify spends the first few frames after the switch rebuilding the library and laying the page
+  // out at its new width (a few hundred milliseconds on Home). The slide waits at its start for a
+  // frame that comes back quickly, so none of it is spent frozen and then skipped.
+  function whenSettled(start) {
+    let last;
+    let waited = 0;
+    const tick = (now) => {
+      const frame = last === undefined ? Infinity : now - last;
+      if (last !== undefined) waited += frame;
+      last = now;
+      if (frame < 25 || waited > 350) start();
+      else settling = requestAnimationFrame(tick);
+    };
+    settling = requestAnimationFrame(tick);
+  }
+
+  function slideSidebar(sidebar, oldStyle) {
+    const target = parseFloat(sidebar.style.getPropertyValue("--left-sidebar-width"));
+    const previous = parseFloat(/--left-sidebar-width:\s*([\d.]+)/.exec(oldStyle ?? "")?.[1]);
+    if (target === previous) return;
+    const skip =
+      Number.isNaN(target) || Number.isNaN(previous) || sidebar.querySelector(".LayoutResizer__resize-bar--resizing") ||
+      inCinema() || matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Turned around mid-slide: carry on from where the edge is now.
+    const from = slides.length ? sidebar.getBoundingClientRect().width : sidebarWidth(previous);
+    endSlide();
+    const to = sidebarWidth(target);
+    if (skip || Math.abs(from - to) < 2) return;
+    const shift = from - to;
+    const top = sidebar.parentElement;
+    const main = top.querySelector(":scope > #main-view");
+    const stretched = [top.querySelector(":scope > #global-nav-bar"), top.querySelector(":scope > :has(.main-nowPlayingBar-container)")].filter(Boolean);
+    const margins = stretched.map((element) => parseFloat(getComputedStyle(element).marginInlineStart) || 0);
+    slideColumns = top;
+    top.style.setProperty("grid-template-columns", `${to}px 1fr auto`, "important");
+    slides = [
+      sidebar.animate({ width: [`${from}px`, `${to}px`] }, SLIDE),
+      ...[...sidebar.children].filter((child) => !child.matches(".LayoutResizer__resize-bar")).map((child) => child.animate({ opacity: [0, 1] }, SLIDE)),
+      ...stretched.map((element, i) => element.animate({ marginInlineStart: [`${margins[i] + shift}px`, `${margins[i]}px`] }, SLIDE)),
+    ];
+    if (main) {
+      slides.push(main.animate({ translate: [`${shift}px 0`, "0 0"], clipPath: [`inset(0 ${Math.max(shift, 0)}px 0 0)`, "inset(0 0 0 0)"] }, SLIDE));
+    }
+    const current = slides;
+    current.forEach((animation) => animation.pause());
+    whenSettled(() => current.forEach((animation) => animation.play()));
+    current[0].finished.then(() => current === slides && endSlide(), () => {});
+  }
+
   // Spotify re-renders the sidebar now and then; put the links back when it does. Collapsing the
   // library shrinks the links to icons and brings back Spotify's own search box.
-  const sizes = new ResizeObserver(([entry]) => root.classList.toggle("lushy-sidebar-collapsed", entry.contentRect.width < 160));
+  const sizes = new MutationObserver((records) => {
+    if (!sized) return;
+    root.classList.toggle("lushy-sidebar-collapsed", collapsed(sized));
+    slideSidebar(sized, records[0].oldValue);
+  });
   cleanups.push(() => sizes.disconnect());
   let sized;
   function mountNav() {
@@ -379,8 +461,9 @@
     if (sidebar.firstChild !== nav) sidebar.prepend(nav);
     if (sized !== sidebar) {
       sizes.disconnect();
-      sizes.observe(sidebar);
+      sizes.observe(sidebar, { attributes: true, attributeFilter: ["style"], attributeOldValue: true });
       sized = sidebar;
+      root.classList.toggle("lushy-sidebar-collapsed", collapsed(sidebar));
     }
   }
 
@@ -389,7 +472,9 @@
   // by what they hold and tagged for user.css: the view itself, the big fills that would hide the
   // backdrop, and the row the artwork is centred in, which gets Lushy's title and artist beside it.
 
-  const CINEMA_ON = /^data-cinema-[a-z-]*-(duringenter|postenter|preexit)$/;
+  // "Expand Your Library" uses the same mechanism (data-cinema-library-…) for a big library view;
+  // that isn't full screen, but full screen opened from it (data-cinema-library-npv-…) is.
+  const CINEMA_ON = /^data-cinema-(?!library-[a-z]+$)[a-z-]*-(duringenter|postenter|preexit)$/;
   const inCinema = () => [...root.attributes].some((attribute) => CINEMA_ON.test(attribute.name));
   const IDLE_MS = 3000;
 
